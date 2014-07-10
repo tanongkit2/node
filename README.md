@@ -79,7 +79,7 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'index'});
 });
 module.exports = router;
-<pre>
+</pre>
 
 step 4 <br />
 install mongoDB
@@ -167,6 +167,35 @@ router.post('/save', function(req, res) {
   });
 });
 module.exports = router;
+</pre>
+
+step 7 <br />
+send data client to server save do mongodb <br />
+callback jsonp to client <br />
+index.html
+<pre>
+DOCTYPE html
+body
+test html
+input type="text" id="user"
+input type="button" value="save" id="s"
+/body
+script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"/script
+script
+$(document).ready(function(){
+  $("‪#‎s‬").click(function(){
+    $.post("/save", {
+      user: $('‪#‎user‬').val(),
+      pwd:"Duckburg"
+    },function(data,status){
+      $('body').append('id : ' +data._id +'<br>');
+      $('body').append('user : ' +data.user +'<br>');
+      $('body').append('pass : ' +data.pwd +'<br>');
+      $('body').append('-----------<br>');
+    });
+  });
+});
+/script
 </pre>
 
 node
