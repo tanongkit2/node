@@ -1,11 +1,12 @@
 node
 ====
-step
+''' step 1 '''
 install nodejs
 <pre>
 npm install nodejs
 </pre>
-
+create folder project <br />
+create file app.js
 <pre>var express = require('express');var app = express();
 app.get('/', function (req, res) {
 res.send('Hello World')
