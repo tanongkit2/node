@@ -1,14 +1,12 @@
 
 node
 ====
-###step 1 
+### step 1 install node.js
 install nodejs
-<pre>
-npm install nodejs
-</pre>
+<pre> npm install nodejs </pre>
 create folder project <br />
 create file app.js <br />
-app.js
+####app.js
 <pre>
 var express = require('express');
 var app = express();
@@ -19,20 +17,20 @@ app.listen(3000)
 module.exports = app;
 </pre>
 
-step 2 <br />
+### step 2 change render .jade to .html file
 create views folder <br />
 change render view from jade to html <br />
 create file index.html > view folder <br />
+<pre> npm install ejs </pre>
+####app.js
 <pre>
-npm install ejs
-</pre>
-app.js
-<pre>
-var express = require('express');
-var app = express();
 app.engine('.html', require('ejs').__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
+
+~~app.get('/', function (req, res) {
+  res.send('Hello World')
+})~~
 
 app.get('/', function(req, res){
     res.render('index', {
@@ -40,11 +38,8 @@ app.get('/', function(req, res){
       header: "Some users"
     });
 });
-app.listen(3000)
-module.exports = app;
 </pre>
-index.html
-
+####index.html
 ```
 <html>
 <DOCTYPE html>
@@ -53,16 +48,12 @@ I love you index html
 </body>
 </html>
 ```
-
-
-step 3 <br />
+### step 3 init routes
 create routes folder</br>
 create public folder</br>
 create index.js > routes folder</br>
-<pre>
-npm install path
-</pre>
-app.js
+<pre> npm install path </pre>
+####app.js
 <pre>
 var path = require('path');
 var routes = require('./routes/index');
