@@ -172,7 +172,17 @@ module.exports = router;
 step 7 <br />
 send data client to server save do mongodb <br />
 callback jsonp to client <br />
-index.html
+
+routes > index.js
+<pre>
+router.get('/test', function(req, res) {
+  User.find().exec(function(err , users){
+    res.render('test', { title: 'test' , users : users});
+  });
+});
+</pre>
+
+views > test.html
 <pre>
 DOCTYPE html
 body
@@ -188,14 +198,86 @@ $(document).ready(function(){
       user: $('‪#‎user‬').val(),
       pwd:"Duckburg"
     },function(data,status){
-      $('body').append('id : ' +data._id +'<br>');
-      $('body').append('user : ' +data.user +'<br>');
-      $('body').append('pass : ' +data.pwd +'<br>');
-      $('body').append('-----------<br>');
+      $('body').append('id : ' +data._id);
+      $('body').append('user : ' +data.user);
+      $('body').append('pass : ' +data.pwd);
+      $('body').append('-----------');
     });
   });
 });
 /script
 </pre>
+step 8 </br>
+include angularjs <br>
+routes > index.js
+<pre>
+router.get('/angular', function(req, res) {
+  res.render('angular', { title: 'angular' });
+});
+router.get('/users', function(req, res) {
+  User.find().exec(function(err , users){
+  res.jsonp(users);
+});
+</pre>
 
-node
+views > index.html
+<pre>
+!DOCTYPE html
+html ng-app
+script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"/script
+script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js"/script
+body ng-controller='angularCtrl' data-ng-init="find()"
+angular html
+ul
+li ng-repeat="contact in contacts" {{ contact }} /li
+/ul
+ul
+li data-ng-repeat="user in users" class="list-group-item"
+{{user._id}} + {{user.user}} + {{user.pwd}}
+/li
+/ul
+/body
+script
+function angularCtrl($scope , $http) {
+  $scope.find = function() {
+    $http.get('/users' ,{}).success(function(response) {
+      $scope.users = response;
+    }).error(function(response) {
+      $scope.error = response.message;
+    });
+  };
+  $scope.contacts = ["hi@email.com", "hello@email.com"];
+}
+/script
+/html
+</pre>
+routes > index.js
+<pre>
+var express = require('express');
+var router = express.Router();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test' , function(err){});
+var UserSchema = new mongoose.Schema({
+  user : {
+    type : String
+  },  
+  pwd : {
+    type : String
+  }
+});
+var User = mongoose.model('User', UserSchema);
+router.get('/', function(req, res) {
+  res.render('index', { title: 'index'});
+});
+router.post('/save', function(req, res) {
+  var user = new User({
+        user : req.body.user ,
+        pwd : req.body.pwd
+      });
+  user.save(function(err , user){
+      res.jsonp(user);
+  });
+});
+module.exports = router;
+</pre>
+end node
