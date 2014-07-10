@@ -28,9 +28,10 @@ app.engine('.html', require('ejs').__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
-~~app.get('/', function (req, res) {
+[span class="red"]Q&A[/span]
+app.get('/', function (req, res) {
   res.send('Hello World')
-})~~
+}) ~~
 
 app.get('/', function(req, res){
     res.render('index', {
