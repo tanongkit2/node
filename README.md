@@ -28,11 +28,6 @@ app.engine('.html', require('ejs').__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
-[span class="red"]Q&A[/span]
-app.get('/', function (req, res) {
-  res.send('Hello World')
-}) ~~
-
 app.get('/', function(req, res){
     res.render('index', {
       title: "EJS example",
@@ -64,9 +59,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
-
 </pre>
-index.js
+####index.js
 <pre>
 var express = require('express');
 var router = express.Router();
@@ -76,14 +70,12 @@ router.get('/', function(req, res) {
 module.exports = router;
 </pre>
 
-step 4 <br />
-install mongoDB
-npm install mongoose
-connect mongooose
-<pre>
-npm install mongooose
-</pre>
-routes > index.js
+### step 4 install mongodb & npm mongoose
+install mongoDB <br />
+npm install mongoose <br />
+connect mongoose <br />
+<pre> npm install mongoose </pre>
+####routes > index.js
 <pre>
 var express = require('express');
 var router = express.Router();
@@ -91,10 +83,10 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test' , function(err){});
 </pre>
 
-step 5 <br />
+### step 5 init mongoose Schema Model
 mongoose Schema <br />
 mongoose model <br />
-routes > index.js
+####routes > index.js
 <pre>
 var UserSchema = new mongoose.Schema({
   user : {
@@ -107,15 +99,15 @@ var UserSchema = new mongoose.Schema({
 var User = mongoose.model('User', UserSchema);
 </pre>
 
-step 6 <br />
+### step 6 include body-parser with init parameter client to server
 include body-parser <br />
 create routing service mongodb <br />
-app.js
+####app.js
 <pre>
 var bodyParser = require('body-parser');
 app.use(express.bodyParser());
 </pre>
-routes > index.js
+####routes > index.js
 <pre>
 router.post('/save', function(req, res) {
   var user = new User({
@@ -128,11 +120,11 @@ router.post('/save', function(req, res) {
 });
 </pre>
 
-step 7 <br />
+###step 7 post data with jquery
 send data client to server save do mongodb <br />
 callback jsonp to client <br />
 
-routes > index.js
+####routes > index.js
 <pre>
 router.get('/test', function(req, res) {
   User.find().exec(function(err , users){
@@ -141,16 +133,16 @@ router.get('/test', function(req, res) {
 });
 </pre>
 
-views > test.html
-<pre>
-DOCTYPE html
-body
+####views > test.html
+```
+<DOCTYPE html>
+<body>
 test html
-input type="text" id="user"
-input type="button" value="save" id="s"
-/body
-script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"/script
-script
+<input type="text" id="user">
+<input type="button" value="save" id="s">
+</body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
 $(document).ready(function(){
   $("‪#‎s‬").click(function(){
     $.post("/save", {
@@ -164,11 +156,11 @@ $(document).ready(function(){
     });
   });
 });
-/script
-</pre>
-step 8 </br>
+</script>
+```
+###step 8 include angular js in client
 include angularjs <br>
-routes > index.js
+####routes > index.js
 <pre>
 router.get('/angular', function(req, res) {
   res.render('angular', { title: 'angular' });
@@ -179,24 +171,24 @@ router.get('/users', function(req, res) {
 });
 </pre>
 
-views > angular.html
-<pre>
-!DOCTYPE html
-html ng-app
-script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"/script
-script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js"/script
-body ng-controller='angularCtrl' data-ng-init="find()"
-angular html
-ul
-li ng-repeat="contact in contacts" {{ contact }} /li
-/ul
-ul
-li data-ng-repeat="user in users" class="list-group-item"
+####views > angular.html
+```
+<!DOCTYPE html>
+<html ng-app>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js"></script>
+<body ng-controller='angularCtrl' data-ng-init="find()">
+<angular html>
+<ul>
+<li ng-repeat="contact in contacts"> {{ contact }} </li>
+</ul>
+<ul>
+<li data-ng-repeat="user in users" class="list-group-item">
 {{user._id}} + {{user.user}} + {{user.pwd}}
-/li
-/ul
-/body
-script
+</li>
+</ul>
+</body>
+<script>
 function angularCtrl($scope , $http) {
   $scope.find = function() {
     $http.get('/users' ,{}).success(function(response) {
@@ -207,8 +199,8 @@ function angularCtrl($scope , $http) {
   };
   $scope.contacts = ["hi@email.com", "hello@email.com"];
 }
-/script
-/html
-</pre>
+</script>
+</html>
+```
 
 end node
