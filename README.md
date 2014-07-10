@@ -22,6 +22,9 @@ step 2 <br />
 create views folder <br />
 change render view from jade to html <br />
 create file index.html > view folder <br />
+<pre>
+npm install ejs
+</pre>
 app.js
 <pre>
 var express = require('express');
@@ -51,6 +54,7 @@ step 3 <br />
 create routes folder</br>
 create public folder</br>
 point to routing </br>
+create index.js > routes folder</br>
 <pre>
 npm install path
 </pre>
@@ -66,7 +70,16 @@ app.set('view engine', 'html');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.listen(3000)
-module.exports = app;<pre>
+module.exports = app;</pre>
+index.js
+<pre>
+var express = require('express');
+var router = express.Router();
+router.get('/', function(req, res) {
+  res.render('index', { title: 'index'});
+});
+module.exports = router;
+<pre>
 
 step 4 <br />
 install mongoDB
@@ -75,8 +88,85 @@ connect mongooose
 <pre>
 npm install mongooose
 </pre>
+routes > index.js
+<pre>
+var express = require('express');
+var router = express.Router();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test' , function(err){});
+</pre>
 
+step 5 <br />
+mongoose Schema <br />
+mongoose model <br />
+routes > index.js
+<pre>
+var express = require('express');
+var router = express.Router();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test' , function(err){});
+var UserSchema = new mongoose.Schema({
+  user : {
+    type : String
+  },  
+  pwd : {
+    type : String
+  }
+});
+var User = mongoose.model('User', UserSchema);
+router.get('/', function(req, res) {
+  res.render('index', { title: 'index'});
+});
+module.exports = router;
+</pre>
 
-
+step 6 <br />
+include body-parser <br />
+create routing service mongodb <br />
+app.js
+<pre>
+var express = require('express');
+var path = require('path');
+var bodyParser = require('body-parser');
+app.use(express.bodyParser());
+var routes = require('./routes/index');
+var app = express();
+app.engine('.html', require('ejs').__express);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'html');
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', routes);
+app.listen(3000)
+module.exports = app;
+</pre>
+routes > index.js
+<pre>
+var express = require('express');
+var router = express.Router();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test' , function(err){});
+var UserSchema = new mongoose.Schema({
+  user : {
+    type : String
+  },  
+  pwd : {
+    type : String
+  }
+});
+var User = mongoose.model('User', UserSchema);
+router.get('/', function(req, res) {
+  res.render('index', { title: 'index'});
+});
+router.post('/save', function(req, res) {
+  var user = new User({
+        user : req.body.user ,
+        pwd : req.body.pwd
+      });
+  user.save(function(err , user){
+      res.jsonp(user);
+  });
+});
+module.exports = router;
+</pre>
 
 node
