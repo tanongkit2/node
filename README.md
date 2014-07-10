@@ -1,7 +1,7 @@
 
 node
 ====
-step 1 <br />
+###step 1 
 install nodejs
 <pre>
 npm install nodejs
@@ -44,13 +44,16 @@ app.listen(3000)
 module.exports = app;
 </pre>
 index.html
-<pre>
-DOCTYPE html
-body
+
+```
+<html>
+<DOCTYPE html>
+<body>
 I love you index html
-/body
-/html
-</pre>
+</body>
+</html>
+```
+
 
 step 3 <br />
 create routes folder</br>
