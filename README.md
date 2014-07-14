@@ -75,10 +75,8 @@ install mongoDB <br />
 npm install mongoose <br />
 connect mongoose <br />
 <pre> npm install mongoose </pre>
-####routes > index.js
+####app.js
 <pre>
-var express = require('express');
-var router = express.Router();
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test' , function(err){});
 </pre>
@@ -86,17 +84,20 @@ mongoose.connect('mongodb://localhost/test' , function(err){});
 ### step 5 init mongoose Schema Model
 mongoose Schema <br />
 mongoose model <br />
-####routes > index.js
+
+### model > user.js
 <pre>
+var mongoose = require('mongoose');
+
 var UserSchema = new mongoose.Schema({
-  user : {
-    type : String
-  },  
-  pwd : {
-    type : String
-  }
+	user : {
+		type : String
+	},
+	pwd : {
+		type : String
+	}
 });
-var User = mongoose.model('User', UserSchema);
+mongoose.model('User' , UserSchema);
 </pre>
 
 ### step 6 include body-parser with init parameter client to server
@@ -109,6 +110,10 @@ app.use(express.bodyParser());
 </pre>
 ####routes > index.js
 <pre>
+var mongoose = require('mongoose');
+require('../model/user');
+var User = mongoose.model('User');
+
 router.post('/save', function(req, res) {
   var user = new User({
         user : req.body.user ,
@@ -281,21 +286,6 @@ module.exports = function() {
 };
 </pre>
 
-### model > user.js
-<pre>
-var mongoose = require('mongoose');
-
-var UserSchema = new mongoose.Schema({
-	user : {
-		type : String
-	},
-	pwd : {
-		type : String
-	}
-});
-mongoose.model('User' , UserSchema);
-</pre>
-
 ### routes > index.js
 <pre>
 var mongoose = require('mongoose');
@@ -328,8 +318,8 @@ router.get('/', function(req, res) {
 </pre>
 
 ### view > index.html
-<pre>
+```
 id login <%=userid%>
-</pre>
+```
 
 end node
