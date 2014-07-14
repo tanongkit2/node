@@ -321,5 +321,79 @@ router.get('/', function(req, res) {
 ```
 id login <%=userid%>
 ```
+###step 9 include socket.io
+### routes > index.js
+<pre>
+router.get('/socket', function(req, res) {
+	if(req.isAuthenticated()){
+		var userid = req.session.passport.user;
+		res.render('socket', { title: 'index',userid : userid});
+	}else {
+		res.redirect('/login');
+	}
+});
+</pre>
+
+### view > socket.html
+```
+<!DOCTYPE html>
+<html ng-app>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+var socket = io.connect('localhost:3000');
+</script>
+<body>
+socketCtrl html
+<div class="chatArea">
+<ul class="messages"></ul>
+</div>
+user <%=userid%><input class="inputMessage" placeholder="Type here..."/> <input type="button" id="a" value="send"/>
+
+</body>
+
+<script>
+var socket = io.connect('localhost:3000');
+
+$(document).ready(function(){
+  $("#a").click(function(){
+ 	var message = $('.inputMessage').val();
+    if (message) {
+      $('.inputMessage').val('');
+     	var addChatMessage = {
+        	message: message
+      	};
+     	console.log('ckuc' ,addChatMessage );
+      socket.emit('new_message', addChatMessage);
+    }
+
+
+  });
+
+  socket.on('re_message', function (data) {
+		console.log('re',data);
+	   $('.messages').append("<li>"+data.username + ": " + data.message.message+"</li>");
+	});
+});
+</script>
+</html>
+```
+
+### app.js
+<pre>
+var io = require('socket.io').listen(server);
+io.sockets.on('connection', function (socket) {
+  socket.on('new_message', function (data) {
+  	console.log('new_message',data);
+   	socket.emit('re_message', {
+      username: 'test',
+      message: data
+    });
+  });
+});
+</pre>
+
 
 end node
