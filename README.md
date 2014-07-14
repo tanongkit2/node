@@ -202,5 +202,134 @@ function angularCtrl($scope , $http) {
 </script>
 </html>
 ```
+###step 9 include passport
+npm install req passport & session & cookie
+#### app.js
+<pre>
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var flash = require('connect-flash');
+var methodOverride = require('method-override');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var logger = require('morgan');
+
+app.use(cookieParser());
+app.use(methodOverride());
+app.use(session({ secret: 'keyboard cat' }));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./controller/passport')();
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test' , function(err){
+	if(err) console.log(err);
+});
+</pre>
+
+### controller > passport.js
+<pre>
+var passport = require('passport'),
+LocalStrategy = require('passport-local').Strategy;
+var mongoose = require('mongoose');
+require('../model/user');
+var User = mongoose.model('User');
+
+module.exports = function() {
+
+	passport.serializeUser(function(user, done) {
+		done(null, user.id);
+	});
+
+	// Deserialize sessions
+	passport.deserializeUser(function(id, done) {
+		User.findOne({
+			_id: id
+		},function(err, user) {
+			done(err, user);
+		});
+	});
+
+	passport.use(new LocalStrategy({
+			usernameField: 'user',
+			passwordField: 'pwd'
+		},function(username, password, done) {
+			console.log("LocalStrategy working...");
+			User.findOne({
+				user: username
+			}, function(err, user) {
+				if (err) {
+				return done(err);
+				}
+				if (!user) {
+					return done(null, false, {
+						message: 'Unknown user'
+					});
+				}
+				if (!user.pwd == password) {
+					return done(null, false, {
+					message: 'Invalid password'
+				});
+			}
+			console.log(user);
+			return done(null, user);
+			});
+		}
+	));
+};
+</pre>
+
+### model > user.js
+<pre>
+var mongoose = require('mongoose');
+
+var UserSchema = new mongoose.Schema({
+	user : {
+		type : String
+	},
+	pwd : {
+		type : String
+	}
+});
+mongoose.model('User' , UserSchema);
+</pre>
+
+### routes > index.js
+<pre>
+var mongoose = require('mongoose');
+require('../model/user');
+var User = mongoose.model('User');
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+
+router.get('/login', function(req, res) {
+	res.render('login', { title: 'index'});
+});
+
+router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
+  function(req, res) {
+  	res.redirect('/');
+  });
+
+router.get('/logout' , function(req, res) {
+	req.logout();
+	res.redirect('/');
+});
+
+// change mothod index
+router.get('/', function(req, res) {
+	var userid = req.session.passport.user;
+	console.log("userid" , userid);
+	res.render('index', { title: 'index' ,userid : userid});
+});
+</pre>
+
+### view > index.html
+<pre>
+id login <%=userid%>
+</pre>
 
 end node
