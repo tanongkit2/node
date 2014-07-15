@@ -395,7 +395,107 @@ io.sockets.on('connection', function (socket) {
 });
 </pre>
 
-###step 10 mongoDB level 2
+###step 10 socket.io
 
+#### views->socket.html
+```
+<!DOCTYPE html>
+<html ng-app>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<body>
+socketCtrl html
+<input type="hidden" id="c" value="<%=userid%>"/><div class="num"></div><div>
+<input type="button" id="b" value="conenct"/>
+<div style="width: 200px; height: 100px; overflow-y: scroll;" id="area_cb">
+</div>
+<div class="chatArea">
+<ul class="messages"></ul>
+</div>
+user : <%=userid%><input class="inputMessage" placeholder="Type here..."/> <input type="button" id="a" value="send"/>
 
+</body>
+
+<script>
+var socket = io.connect('http://192.168.133.129:4000');
+
+$(document).ready(function(){
+	$("#a").click(function(){
+		var message = $('.inputMessage').val();
+	if (message) {
+	  	$('.inputMessage').val('');
+	 	var addChatMessage = {
+	    	message: message
+	  	};
+		socket.emit('new_message', addChatMessage);
+	}
+	});
+
+	$("#b").click(function(){
+		socket.emit('add_user', $("#c").val());
+		socket.emit('sub');
+	});
+
+	socket.on('re_sub' , function(data) {
+		$('#area_cb').prepend("<p> -- "+data+" -- </p>");
+  	});
+
+	socket.on('user_joined', function (data) {
+		$('.num').html(data.username + ": online -> total : " + data.numUsers);
+	});
+  	socket.on('re_message', function (data) {
+		console.log('re',data);
+   		$('.messages').append("<li>"+data.username + ": " + data.message.message+"</li>");
+	});
+});
+</script>
+</html>
+```
+#### socket.io
+<pre>
+var server = app.listen(4000)
+var usernames = {};
+var numUsers = 0;
+var userSub = []; 
+var cbarr = [];
+
+var io = require('socket.io').listen(server);
+io.sockets.on('connection', function (socket) {
+  var addedUser = false;
+  socket.on('add_user', function (username) {
+    
+    socket.username = username;
+    usernames[username] = username;
+    ++numUsers;
+   
+    socket.broadcast.emit('user_joined', {
+      username: socket.username,
+      numUsers: numUsers
+    });
+  });
+
+  socket.on('new_message', function (data) {
+  	socket.broadcast.emit('re_message', {
+      username: 'test',
+      message: data
+    });
+  });
+
+  socket.on('sub' , function(user , cb) {
+  	socket.join('random');
+  });
+
+  function callback(ran){
+  	io.to('random').emit('re_sub' , ran);
+  }
+
+  setInterval(function(){
+  	var ran = Math.floor(Math.random() * 100000);
+  	callback(ran);
+  }, 3000);
+
+});
+</pre>
 end node
