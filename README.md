@@ -99,7 +99,77 @@ var UserSchema = new mongoose.Schema({
 });
 mongoose.model('User' , UserSchema);
 </pre>
+### step 5.1 ssh shell mongo & mongod
+<pre>
+terminal1 > mongod
+</pre>
+terminal2 > mongo localhost 
+create collection
+<pre>
+db.createCollection("people")
+db.getCollectionNames()
+</pre>
+insert data to collection
+<pre>
+//create topic
+var topicChoices = ['male', 'female','mongodb','query'];
+var commentChoices = ['black', 'brown', 'blond', 'red', 'auburn',
+'chestnut', 'white'];
+var userChoices = ['golf', 'jone', 'ken', 'red', 'odete',
+'chestnut', 'white', 'gety'];
 
+var createDate = new Date();
+createDate.setYear(1970);
+
+for (var i = 0; i < 1000000; ++i) {
+  createDate.setHours(createDate.getHours() + 1);
+  db.people.insert({
+    topicID : i,
+    topic : topicChoices [Math.floor(Math.random() *topicChoices.length)]+i,
+    comments : [ ],
+    user: userChoices [Math.floor(Math.random() *userChoices.length)],
+    date : createDate  
+  })
+}
+</pre>
+insert data to sub collection
+<pre>
+var commentChoices = ['black', 'brown', 'blond', 'red', 'auburn',
+'chestnut', 'white'];
+var userChoices = ['golf', 'jone', 'ken', 'red', 'odete',
+'chestnut', 'white', 'gety'];
+var createDate = new Date();
+createDate.setYear(1970);
+
+for (var i = 0; i < 100000; ++i) {
+  var rantopicID = Math.floor(Math.random() * 1000);
+  createDate.setHours(createDate.getHours() + 1);
+  db.people.update({
+    "topicID" : rantopicID
+  },{
+     $push: {
+       'comments' : {
+         commentID: i,
+         text : commentChoices [Math.floor(Math.random() *commentChoices.length)],
+         user : userChoices [Math.floor(Math.random() *userChoices.length)],
+         date : createDate  
+       }
+     }
+   })
+} 
+</pre>
+use explain()
+<pre>
+db.people.find().explain()
+</pre>
+create index
+<pre>
+db.people.ensureIndex({date : 1})
+db.people.ensureIndex({date : -1})
+db.people.find().sort({date:-1}).limit(1).explain();
+db.people.getIndexes()
+db.people.dropIndex({topicID:-1})
+</pre>
 ### step 6 include body-parser with init parameter client to server
 include body-parser <br />
 create routing service mongodb <br />
