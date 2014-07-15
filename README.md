@@ -99,19 +99,21 @@ var UserSchema = new mongoose.Schema({
 });
 mongoose.model('User' , UserSchema);
 </pre>
+
 ### step 5.1 ssh shell mongo & mongod
 <pre>
 terminal1 > mongod
 </pre>
+
 terminal2 > mongo localhost 
 create collection
 <pre>
 db.createCollection("people")
 db.getCollectionNames()
 </pre>
+
 insert data to collection
-<pre>
-//create topic
+```
 var topicChoices = ['male', 'female','mongodb','query'];
 var commentChoices = ['black', 'brown', 'blond', 'red', 'auburn',
 'chestnut', 'white'];
@@ -131,9 +133,10 @@ for (var i = 0; i < 1000000; ++i) {
     date : createDate  
   })
 }
-</pre>
+```
+
 insert data to sub collection
-<pre>
+```
 var commentChoices = ['black', 'brown', 'blond', 'red', 'auburn',
 'chestnut', 'white'];
 var userChoices = ['golf', 'jone', 'ken', 'red', 'odete',
@@ -157,7 +160,8 @@ for (var i = 0; i < 100000; ++i) {
      }
    })
 } 
-</pre>
+```
+
 use explain()
 <pre>
 db.people.find().explain()
